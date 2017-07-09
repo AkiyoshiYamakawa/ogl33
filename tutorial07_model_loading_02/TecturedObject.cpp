@@ -2,6 +2,7 @@
 #include <iostream>
 using namespace std;
 
+//int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, char* ddsFile, char* strMVP0){
 int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, char* ddsFile){
 
 	cout<<"TexturedObject() called"<<endl;
@@ -16,7 +17,8 @@ int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, ch
 
 	// Get a handle for our "MVP" uniform
 	//GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-	MatrixID = glGetUniformLocation(programID, "MVP");
+	//strMVP = strMVP0;
+	//MatrixID = glGetUniformLocation(programID, strMVP);
 
 	// Load the texture
 	//GLuint Texture = loadDDS("uvmap.DDS");
@@ -53,12 +55,19 @@ int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, ch
 }
 
 int TexturedObject::draw(glm::mat4 MVP) {
-		// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 		// Use our shader
 		glUseProgram(programID);
+
+		MatrixID = glGetUniformLocation(programID, "MVP");
+
+	
+	// Send our transformation to the currently bound shader, 
+		// in the "MVP" uniform
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+		//// Use our shader
+		//glUseProgram(programID);
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);

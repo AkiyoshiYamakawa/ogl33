@@ -35,8 +35,10 @@ private:
 	std::vector<glm::vec3> normals; // Won't be used at the moment.
 	GLuint vertexbuffer;
 	GLuint uvbuffer;
+	char*  strMVP;
 
 public:
+	//int init(char*, char*, char*, char*, char*);
 	int init(char*, char*, char*, char*);
 	int draw(glm::mat4);
 	int finalize();
