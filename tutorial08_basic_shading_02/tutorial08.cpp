@@ -81,7 +81,7 @@ int main( void )
 	glEnable(GL_CULL_FACE);
 
 	tobj01.init("StandardShading.vertexshader", "StandardShading.fragmentshader" ,"sphere.obj","sphere.dds");
-	tobj02.init("StandardShading.vertexshader", "StandardShading.fragmentshader" ,"sphere.obj","sphere.dds");
+	tobj02.init("StandardShading.vertexshader", "StandardShading.fragmentshader" ,"plate.obj","plate.dds");
 	/*-------------------------------
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -133,22 +133,33 @@ int main( void )
 
 	do{
 
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		/**
 		// Use our shader
 		//glUseProgram(programID);
+		**/
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs();
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+		// ïΩñ Çâ∫Ç…Å|ÇPï™â∫Ç∞ÇÈ
+		glm::mat4 Translatedown = glm::translate(glm::mat4(1.0f),glm::vec3(0,-1,0));
+		glm::mat4 ModelMatrix = getModelMatrix();
+		//ModelMatrix
+		glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * Translatedown;
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
+		
 		tobj01.draw(MVP,ViewMatrix,ModelMatrix);
-		tobj02.draw(MVP,ViewMatrix,ModelMatrix);
-		/*--------------------------
+		tobj02.draw(MVP2,ViewMatrix,ModelMatrix);
+		/*
+		// Use our shader
+		//glUseProgram(programID);
+
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -206,7 +217,7 @@ int main( void )
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-		-------------*/
+		*/
 
 		// Swap buffers
 		glfwSwapBuffers(window);

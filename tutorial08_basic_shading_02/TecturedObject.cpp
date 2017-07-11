@@ -5,13 +5,13 @@ using namespace std;
 //int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, char* ddsFile, char* strMVP0){
 int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, char* ddsFile){
 
-	cout<<"TexturedObject() called"<<endl;
 	//GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
 	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders( vshaderFile, fshaderFile );
+	//programID = LoadShaders( "StandardShading.vertexshader", "StandardShading.fragmentshader" );
+	programID = LoadShaders( vshaderFile,fshaderFile);
 
 	// Get a handle for our "MVP" uniform
 	MatrixID = glGetUniformLocation(programID, "MVP");
@@ -19,37 +19,42 @@ int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, ch
 	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
+	//GLuint Texture = loadDDS("uvmap.DDS");
+	//Texture = loadDDS("sphere-plate.DDS");
 	Texture = loadDDS(ddsFile);
 	
 	// Get a handle for our "myTextureSampler" uniform
-	//TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+	TextureID  = glGetUniformLocation(programID, "myTextureSampler");
 
 	// Read our .obj file
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> normals;
+	//std::vector<glm::vec3> vertices;
+	//std::vector<glm::vec2> uvs;
+	//std::vector<glm::vec3> normals;
+	//bool res = loadOBJ("suzanne.obj", vertices, uvs, normals);
 	bool res = loadOBJ(objFile, vertices, uvs, normals);
 
 	// Load it into a VBO
 
-	vertexbuffer;
+	//GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
+	//GLuint uvbuffer;
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
 
+	//GLuint normalbuffer;
 	glGenBuffers(1, &normalbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
 
 	// Get a handle for our "LightPosition" uniform
 	glUseProgram(programID);
-	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
-
+	LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 	return 0;
+
 }
 
 int TexturedObject::draw(glm::mat4 MVP,glm::mat4 ViewMatrix, glm::mat4 ModelMatrix) {
@@ -57,15 +62,20 @@ int TexturedObject::draw(glm::mat4 MVP,glm::mat4 ViewMatrix, glm::mat4 ModelMatr
 		// Use our shader
 		glUseProgram(programID);
 
-		MatrixID = glGetUniformLocation(programID, "MVP");
-		MatrixID = glGetUniformLocation(programID, "MVP");
-		ViewMatrixID = glGetUniformLocation(programID, "V");
-		ModelMatrixID = glGetUniformLocation(programID, "M");
+		/*
+		// Compute the MVP matrix from keyboard and mouse input
+		computeMatricesFromInputs();
+		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		glm::mat4 ViewMatrix = getViewMatrix();
+		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		*/
 
-	
-	// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+	// Get a handle for our "MVP" uniform
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
@@ -124,9 +134,7 @@ int TexturedObject::draw(glm::mat4 MVP,glm::mat4 ViewMatrix, glm::mat4 ModelMatr
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-
 		return 0;
-
 }
 
 int TexturedObject::finalize() {
