@@ -41,6 +41,7 @@ float initialFoV = 45.0f;
 // distance
 double radius = 10.0f;
 float qtangle = 0.0f;
+char lastKey = ' ' ;
 
 float speed = 3.0f*0.001; // 3 units / second
 float mouseSpeed = 0.005f;
@@ -153,6 +154,10 @@ void computeMatricesFromInputs(){
 		//vn = -position;
 		vn = vec3( -1,0,0);
 		//qtangle += 0.005f;
+		if( lastKey != GLFW_KEY_A ){
+			lastKey = GLFW_KEY_A;
+			qtangle = -qtangle;
+		}
 		qtangle += speed;
 
 	}
@@ -163,6 +168,10 @@ void computeMatricesFromInputs(){
 		//vn = position;
 		//qtangle += 0.005f;
 		//qt = quat( qtangle, glm::cross(vn,up2));
+		if( lastKey != GLFW_KEY_D ){
+			lastKey = GLFW_KEY_D;
+			qtangle = -qtangle;
+		}
 		qtangle += speed;
 	}
 	// move forward 'w'
@@ -172,6 +181,10 @@ void computeMatricesFromInputs(){
 		//vn = glm::cross(position,up2);
 		//qtangle += 0.005f;
 		//qt = quat( qtangle, glm::cross(vn,up2));
+		if( lastKey != GLFW_KEY_W ){
+			lastKey = GLFW_KEY_W;
+			qtangle = -qtangle;
+		}
 		qtangle += speed;
 	}
 	// move backward 's'
@@ -181,6 +194,10 @@ void computeMatricesFromInputs(){
 		//vn = glm::cross(-position,up2);
 		//qtangle += 0.005f;
 		//qt = quat( qtangle, glm::cross(vn,up2));
+		if( lastKey != GLFW_KEY_S ){
+			lastKey = GLFW_KEY_S;
+			qtangle = -qtangle;
+		}
 		qtangle += speed;
 	}
 
