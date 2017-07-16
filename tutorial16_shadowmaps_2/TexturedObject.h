@@ -44,14 +44,8 @@ GLuint elementbuffer;
 GLuint FramebufferName;
 GLuint depthTexture;
 // The quad's FBO. Used only for visualizing the shadowmap.
-static const GLfloat g_quad_vertex_buffer_data[] = { 
-	-1.0f, -1.0f, 0.0f,
-	 1.0f, -1.0f, 0.0f,
-	-1.0f,  1.0f, 0.0f,
-	-1.0f,  1.0f, 0.0f,
-	 1.0f, -1.0f, 0.0f,
-	 1.0f,  1.0f, 0.0f,
-};
+//static const GLfloat g_quad_vertex_buffer_data[18];
+//static const GLfloat g_quad_vertex_buffer_data[18];
 GLuint quad_vertexbuffer;
 // Create and compile our GLSL program from the shaders
 GLuint quad_programID ;

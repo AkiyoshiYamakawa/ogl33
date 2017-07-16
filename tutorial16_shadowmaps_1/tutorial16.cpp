@@ -72,8 +72,9 @@ GLuint DepthBiasID ;
 GLuint ShadowMapID ;
 
 GLuint lightInvDirID ;
-
+	
 int init(){
+
 	//GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);

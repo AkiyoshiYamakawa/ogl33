@@ -13,6 +13,15 @@ using namespace glm;
 #include <common/objloader.hpp>
 #include <common/vboindexer.hpp>
 
+static const GLfloat g_quad_vertex_buffer_data[] = { 
+	-1.0f, -1.0f, 0.0f,
+	 1.0f, -1.0f, 0.0f,
+	-1.0f,  1.0f, 0.0f,
+	-1.0f,  1.0f, 0.0f,
+	 1.0f, -1.0f, 0.0f,
+	 1.0f,  1.0f, 0.0f,
+};
+
 //int TexturedObject::init(char* vshaderFile, char* fshaderFile, char* objFile, char* ddsFile, char* strMVP0){
 int TexturedObject::init(
 	char* vshDRTTFile,char* fshDRTTFile, 
@@ -33,14 +42,14 @@ int TexturedObject::init(
 
 	// Load the texture
 	//GLuint Texture = loadDDS("uvmap.DDS");
-	Texture = loadDDS("sphere-plate.DDS");
+	Texture = loadDDS(ddsFile);
 	
 	// Read our .obj file
 	//std::vector<glm::vec3> vertices;
 	//std::vector<glm::vec2> uvs;
 	//std::vector<glm::vec3> normals;
 	//bool res = loadOBJ("room_thickwalls.obj", vertices, uvs, normals);
-	bool res = loadOBJ("sphere-plate.obj", vertices, uvs, normals);
+	bool res = loadOBJ(objFile, vertices, uvs, normals);
 
 	//std::vector<unsigned short> indices;
 	//std::vector<glm::vec3> indexed_vertices;
@@ -145,7 +154,7 @@ int TexturedObject::init(
 }
 
 int TexturedObject::draw(
-			int WindowWidth,
+			int windowWidth,
 			int windowHeight,
 			glm::mat4 depthMVP,
 			glm::mat4 MVP,
@@ -154,6 +163,21 @@ int TexturedObject::draw(
 			glm::mat4 depthBiasMVP,
 			glm::vec3 lightInvDir
 		 ){
+		/* part-0 */
+		glUseProgram(depthProgramID);
+	depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
+	//TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+
+	// Get a handle for our "MVP" uniform
+	//MatrixID = glGetUniformLocation(programID, "MVP");
+	//ViewMatrixID = glGetUniformLocation(programID, "V");
+	//ModelMatrixID = glGetUniformLocation(programID, "M");
+	//DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
+	//ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+	
+	// Get a handle for our "LightPosition" uniform
+	lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
+
 		/* part-1 */
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
@@ -213,6 +237,17 @@ int TexturedObject::draw(
 		// Use our shader
 		glUseProgram(programID);
 		/** part-4 */
+	TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+
+	// Get a handle for our "MVP" uniform
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
+	DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
+	ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+	
+	// Get a handle for our "LightPosition" uniform
+	lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
 
 		/* part-5 */
 		// Send our transformation to the currently bound shader, 

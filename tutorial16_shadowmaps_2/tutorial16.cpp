@@ -27,6 +27,7 @@ int windowWidth = 1024;
 int windowHeight = 768;
 //------------
 TexturedObject tobj01;
+TexturedObject tobj02;
 
 int main( void )
 {
@@ -90,10 +91,18 @@ int main( void )
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 
-	tobj01.init("DepthRTT.vertexshader", "DepthRTT.fragmentshader",
+	tobj01.init(
+		"DepthRTT.vertexshader", "DepthRTT.fragmentshader",
 		"Passthrough.vertexshader", "SimpleTexture.fragmentshader",
 		"ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" ,
-		"sphere-plate.obj","sphere-plate.dds");
+		"sphere.obj","sphere.dds");
+	
+	tobj02.init(
+		"DepthRTT.vertexshader", "DepthRTT.fragmentshader",
+		"Passthrough.vertexshader", "SimpleTexture.fragmentshader",
+		"ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" ,
+		"plate.obj","plate.dds");
+	
 	/*
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -217,6 +226,7 @@ int main( void )
 	
 	do{
 
+		/*
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0,0,1024,1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -226,12 +236,14 @@ int main( void )
 		// (if your geometry is made this way)
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-
+		*/
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		/*
 		// Use our shader
 		glUseProgram(depthProgramID);
+		*/
 
 		glm::vec3 lightInvDir = glm::vec3(0.5f,2,2);
 
@@ -246,6 +258,7 @@ int main( void )
 		glm::mat4 depthModelMatrix = glm::mat4(1.0);
 		glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
+		/*
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
 		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
@@ -283,20 +296,25 @@ int main( void )
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
+		*/
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		/*
 		// Use our shader
 		glUseProgram(programID);
+		*/
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs();
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 		//ViewMatrix = glm::lookAt(glm::vec3(14,6,4), glm::vec3(0,1,0), glm::vec3(0,1,0));
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 ModelMatrix = getModelMatrix();
+		glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 		
 		glm::mat4 biasMatrix(
 			0.5, 0.0, 0.0, 0.0, 
@@ -307,6 +325,7 @@ int main( void )
 
 		glm::mat4 depthBiasMVP = biasMatrix*depthMVP;
 
+		/*
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -408,8 +427,16 @@ int main( void )
 		// You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see anything !
 		//glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 		glDisableVertexAttribArray(0);
+		*/
 
-
+		tobj02.draw( windowWidth,windowHeight,
+				depthMVP,MVP2,ModelMatrix2,ViewMatrix,
+				depthBiasMVP,lightInvDir);
+		
+		tobj01.draw( windowWidth,windowHeight,
+				depthMVP,MVP,ModelMatrix,ViewMatrix,
+				depthBiasMVP,lightInvDir);
+		
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -420,6 +447,7 @@ int main( void )
 
 	// Cleanup VBO and shader
 	tobj01.finalize();
+	tobj02.finalize();
 	/*
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
@@ -441,4 +469,3 @@ int main( void )
 
 	return 0;
 }
-
