@@ -27,7 +27,7 @@ int windowWidth = 1024;
 int windowHeight = 768;
 //------------
 TexturedObject tobj01;
-TexturedObject tobj02;
+//TexturedObject tobj02;
 
 int main( void )
 {
@@ -95,14 +95,15 @@ int main( void )
 		"DepthRTT.vertexshader", "DepthRTT.fragmentshader",
 		"Passthrough.vertexshader", "SimpleTexture.fragmentshader",
 		"ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" ,
-		"sphere.obj","sphere.dds");
+		"sphere-plate.obj","sphere-plate.dds");
 	
+	/*
 	tobj02.init(
 		"DepthRTT.vertexshader", "DepthRTT.fragmentshader",
 		"Passthrough.vertexshader", "SimpleTexture.fragmentshader",
 		"ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" ,
 		"plate.obj","plate.dds");
-	
+	*/
 	/*
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -429,10 +430,11 @@ int main( void )
 		glDisableVertexAttribArray(0);
 		*/
 
+		/*
 		tobj02.draw( windowWidth,windowHeight,
 				depthMVP,MVP2,ModelMatrix2,ViewMatrix,
 				depthBiasMVP,lightInvDir);
-		
+		*/
 		tobj01.draw( windowWidth,windowHeight,
 				depthMVP,MVP,ModelMatrix,ViewMatrix,
 				depthBiasMVP,lightInvDir);
@@ -447,7 +449,7 @@ int main( void )
 
 	// Cleanup VBO and shader
 	tobj01.finalize();
-	tobj02.finalize();
+	//tobj02.finalize();
 	/*
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
