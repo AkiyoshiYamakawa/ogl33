@@ -30,6 +30,7 @@ int TexturedObject::init(
 	char* objFile, 
 	char* ddsFile){
 
+	/*
 	//GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
@@ -39,6 +40,7 @@ int TexturedObject::init(
 
 	// Get a handle for our "MVP" uniform
 	depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
+	*/
 
 	// Load the texture
 	//GLuint Texture = loadDDS("uvmap.DDS");
@@ -84,7 +86,7 @@ int TexturedObject::init(
 	// ---------------------------------------------
 	// Render to Texture - specific code begins here
 	// ---------------------------------------------
-
+	/*
 	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
 	//GLuint FramebufferName = 0;
 	glGenFramebuffers(1, &FramebufferName);
@@ -124,6 +126,7 @@ int TexturedObject::init(
 	};
 	*/
 
+	/*
 	//GLuint quad_vertexbuffer;
 	glGenBuffers(1, &quad_vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
@@ -147,38 +150,42 @@ int TexturedObject::init(
 	DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
 	ShadowMapID = glGetUniformLocation(programID, "shadowMap");
 	
+	
 	// Get a handle for our "LightPosition" uniform
 	lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
+	*/
 
 	return 0;
 }
 
-int TexturedObject::draw(
-			int windowWidth,
-			int windowHeight,
-			glm::mat4 depthMVP,
+int TexturedObject::draw1(
+			//int windowWidth,
+			//int windowHeight,
+			//glm::mat4 depthMVP,
 			glm::mat4 MVP,
 			glm::mat4 ModelMatrix,
-			glm::mat4 ViewMatrix,
-			glm::mat4 depthBiasMVP,
-			glm::vec3 lightInvDir
+			glm::mat4 ViewMatrix
+			//glm::mat4 depthBiasMVP,
+			//glm::vec3 lightInvDir
 		 ){
-		/* part-0 */
+
+	/*
+		// part-0 
 		glUseProgram(depthProgramID);
 	depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
-	//TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+	TextureID  = glGetUniformLocation(programID, "myTextureSampler");
 
 	// Get a handle for our "MVP" uniform
-	//MatrixID = glGetUniformLocation(programID, "MVP");
-	//ViewMatrixID = glGetUniformLocation(programID, "V");
-	//ModelMatrixID = glGetUniformLocation(programID, "M");
-	//DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
-	//ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
+	DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
+	ShadowMapID = glGetUniformLocation(programID, "shadowMap");
 	
 	// Get a handle for our "LightPosition" uniform
 	lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
 
-		/* part-1 */
+		// part-1 
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0,0,1024,1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -188,14 +195,14 @@ int TexturedObject::draw(
 		// (if your geometry is made this way)
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-		/* part-1*/
+		// part-1
 
-		/* part-2 */
+		// part-2 
 		// Use our shader
 		glUseProgram(depthProgramID);
-		/* part-2 */
+		// part-2 
 
-		/* part-3 */
+		// part-3 
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
 		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
@@ -224,6 +231,7 @@ int TexturedObject::draw(
 		);
 
 		glDisableVertexAttribArray(0);
+		*/
 
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -319,6 +327,19 @@ int TexturedObject::draw(
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
+}
+
+/*
+int TexturedObject::draw2(
+			int windowWidth,
+			int windowHeight,
+			glm::mat4 depthMVP,
+			glm::mat4 MVP,
+			glm::mat4 ModelMatrix,
+			glm::mat4 ViewMatrix,
+			glm::mat4 depthBiasMVP,
+			glm::vec3 lightInvDir
+		 ){
 
 
 		// Optionally render the shadowmap (for debug only)
@@ -351,10 +372,11 @@ int TexturedObject::draw(
 		// You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see anything !
 		//glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 		glDisableVertexAttribArray(0);
-		/** part-5 */
+		// part-5 
 
 		return 0;
 }
+*/
 
 int TexturedObject::finalize() {
 	// Cleanup VBO and shader

@@ -29,6 +29,8 @@ int windowHeight = 768;
 GLuint VertexArrayID;
 GLuint depthProgramID;
 GLuint depthMatrixID;
+
+// object 1
 GLuint Texture;
 std::vector<glm::vec3> vertices;
 std::vector<glm::vec2> uvs;
@@ -42,6 +44,23 @@ GLuint vertexbuffer;
 GLuint uvbuffer;
 GLuint normalbuffer;
 GLuint elementbuffer;
+// object 1 end
+// object 2
+GLuint Texture2;
+std::vector<glm::vec3> vertices2;
+std::vector<glm::vec2> uvs2;
+std::vector<glm::vec3> normals2;
+
+std::vector<unsigned short> indices2;
+std::vector<glm::vec3> indexed_vertices2;
+std::vector<glm::vec2> indexed_uvs2;
+std::vector<glm::vec3> indexed_normals2;
+GLuint vertexbuffer2;
+GLuint uvbuffer2;
+GLuint normalbuffer2;
+GLuint elementbuffer2;
+// object2 end
+
 GLuint FramebufferName = 0;
 GLuint depthTexture;
 // The quad's FBO. Used only for visualizing the shadowmap.
@@ -63,6 +82,7 @@ GLuint programID ;
 
 // Get a handle for our "myTextureSampler" uniform
 GLuint TextureID ;
+GLuint TextureID2 ;
 
 // Get a handle for our "MVP" uniform
 GLuint MatrixID ;
@@ -87,23 +107,28 @@ int init(){
 
 	// Load the texture
 	//GLuint Texture = loadDDS("uvmap.DDS");
-	Texture = loadDDS("sphere-plate.DDS");
+	Texture = loadDDS("sphere.DDS");
+	Texture2 = loadDDS("plate.DDS");
 	
 	// Read our .obj file
 	//std::vector<glm::vec3> vertices;
 	//std::vector<glm::vec2> uvs;
 	//std::vector<glm::vec3> normals;
 	//bool res = loadOBJ("room_thickwalls.obj", vertices, uvs, normals);
-	bool res = loadOBJ("sphere-plate.obj", vertices, uvs, normals);
+	//bool res = loadOBJ("sphere-plate.obj", vertices, uvs, normals);
+	bool res = loadOBJ("sphere.obj", vertices, uvs, normals);
+	bool res2 = loadOBJ("plate.obj", vertices2, uvs2, normals2);
 
 	//std::vector<unsigned short> indices;
 	//std::vector<glm::vec3> indexed_vertices;
 	//std::vector<glm::vec2> indexed_uvs;
 	//std::vector<glm::vec3> indexed_normals;
 	indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
+	indexVBO(vertices2, uvs2, normals2, indices2, indexed_vertices2, indexed_uvs2, indexed_normals2);
 
 	// Load it into a VBO
 
+	// object 1
 	//GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -124,7 +149,30 @@ int init(){
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
+	// object 1 end
 
+	// object 2
+	//GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+
+	//GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, indexed_uvs2.size() * sizeof(glm::vec2), &indexed_uvs2[0], GL_STATIC_DRAW);
+
+	//GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, indexed_normals2.size() * sizeof(glm::vec3), &indexed_normals2[0], GL_STATIC_DRAW);
+
+	// Generate a buffer for the indices as well
+	//GLuint elementbuffer;
+	glGenBuffers(1, &elementbuffer2);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0], GL_STATIC_DRAW);
+	// object 2 end
 
 	// ---------------------------------------------
 	// Render to Texture - specific code begins here
@@ -201,6 +249,7 @@ int init(){
 int draw(	glm::mat4 depthMVP,
 			glm::mat4 MVP,
 			glm::mat4 ModelMatrix,
+			glm::mat4 ModelMatrix2,
 			glm::mat4 ViewMatrix,
 			glm::mat4 depthBiasMVP,
 			glm::vec3 lightInvDir
@@ -227,6 +276,7 @@ int draw(	glm::mat4 depthMVP,
 		// in the "MVP" uniform
 		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
 
+		// object 1
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -249,8 +299,35 @@ int draw(	glm::mat4 depthMVP,
 			GL_UNSIGNED_SHORT, // type
 			(void*)0           // element array buffer offset
 		);
+		glDisableVertexAttribArray(0);
+		// object 1 end
+
+		// object 2
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+		glVertexAttribPointer(
+			0,  // The attribute we want to configure
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer2);
+
+		// Draw the triangles !
+		glDrawElements(
+			GL_TRIANGLES,      // mode
+			indices2.size(),    // count
+			GL_UNSIGNED_SHORT, // type
+			(void*)0           // element array buffer offset
+		);
 
 		glDisableVertexAttribArray(0);
+		// object 2 end
 
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -264,6 +341,14 @@ int draw(	glm::mat4 depthMVP,
 		// Use our shader
 		glUseProgram(programID);
 		/** part-4 */
+
+		// Get a handle for our "MVP" uniform
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
+	DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
+	ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+	TextureID  = glGetUniformLocation(programID, "myTextureSampler");
 
 		/* part-5 */
 		// Send our transformation to the currently bound shader, 
@@ -285,6 +370,7 @@ int draw(	glm::mat4 depthMVP,
 		glBindTexture(GL_TEXTURE_2D, depthTexture);
 		glUniform1i(ShadowMapID, 1);
 
+		// object 1
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -331,7 +417,63 @@ int draw(	glm::mat4 depthMVP,
 			GL_UNSIGNED_SHORT, // type
 			(void*)0           // element array buffer offset
 		);
+		// object 1 end
 
+		// object 2 
+		glUseProgram(programID);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+
+		//TextureID2  = glGetUniformLocation(programID, "myTextureSampler");
+		//glUniform1i(TextureID2, 0);
+		//glBindTexture(GL_TEXTURE_2D, Texture2);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+		glVertexAttribPointer(
+			0,                  // attribute
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : UVs
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+		glVertexAttribPointer(
+			1,                                // attribute
+			2,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// 3rd attribute buffer : normals
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer2);
+		glVertexAttribPointer(
+			2,                                // attribute
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer2);
+
+		// Draw the triangles !
+		glDrawElements(
+			GL_TRIANGLES,      // mode
+			indices2.size(),    // count
+			GL_UNSIGNED_SHORT, // type
+			(void*)0           // element array buffer offset
+		);
+		// object 2 end
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
@@ -374,14 +516,26 @@ int draw(	glm::mat4 depthMVP,
 
 int finalize(){
 	// Cleanup VBO and shader
+	// object 1
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
 	glDeleteBuffers(1, &normalbuffer);
 	glDeleteBuffers(1, &elementbuffer);
+	// object 1 end
+	// object 2
+	glDeleteBuffers(1, &vertexbuffer2);
+	glDeleteBuffers(1, &uvbuffer2);
+	glDeleteBuffers(1, &normalbuffer2);
+	glDeleteBuffers(1, &elementbuffer2);
+	// object 2 end
+
 	glDeleteProgram(programID);
 	glDeleteProgram(depthProgramID);
 	glDeleteProgram(quad_programID);
 	glDeleteTextures(1, &Texture);
+
+	// object 1 end
+
 	return 0;
 }
 
@@ -656,7 +810,8 @@ int main( void )
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 		//ViewMatrix = glm::lookAt(glm::vec3(14,6,4), glm::vec3(0,1,0), glm::vec3(0,1,0));
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 ModelMatrix = getModelMatrix();
+		glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		
 		glm::mat4 biasMatrix(
@@ -775,6 +930,7 @@ int main( void )
 		draw(depthMVP,
 			MVP,
 			ModelMatrix,
+			ModelMatrix2,
 			ViewMatrix,
 			depthBiasMVP,
 			lightInvDir);

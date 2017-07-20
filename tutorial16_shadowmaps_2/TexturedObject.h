@@ -69,7 +69,15 @@ GLuint lightInvDirID ;
 public:
 //int init(char*, char*, char*, char*, char*);
 int init(char*, char*, char*, char*,char*, char*, char*, char*);
-int TexturedObject::draw(
+int TexturedObject::draw1(
+			glm::mat4 MVP,
+			glm::mat4 ModelMatrix,
+			glm::mat4 ViewMatrix
+			//glm::mat4 depthBiasMVP,
+			//glm::vec3 lightInvDir
+		 );
+/*
+int TexturedObject::draw2(
 			int WindowWidth, 
 			int WindowHeight, 
 			glm::mat4 depthMVP,
@@ -79,6 +87,8 @@ int TexturedObject::draw(
 			glm::mat4 depthBiasMVP,
 			glm::vec3 lightInvDir
 		 );
+*/
+
 int finalize();
 
 };
