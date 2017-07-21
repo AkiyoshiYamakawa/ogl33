@@ -95,7 +95,7 @@ int main( void )
 	
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
-	GLuint TextureID2  = glGetUniformLocation(programID, "myTextureSampler");
+	//GLuint TextureID2  = glGetUniformLocation(programID, "myTextureSampler");
 
 	// Read our .obj file
 	std::vector<glm::vec3> vertices;
@@ -108,6 +108,7 @@ int main( void )
 	std::vector<glm::vec3> normals2;
 	bool res2 = loadOBJ("plate.obj", vertices2, uvs2, normals2);
 
+	// Load it into a VBO
 	std::vector<unsigned short> indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;
@@ -119,7 +120,6 @@ int main( void )
 	std::vector<glm::vec2> indexed_uvs2;
 	std::vector<glm::vec3> indexed_normals2;
 	indexVBO(vertices2, uvs2, normals2, indices2, indexed_vertices2, indexed_uvs2, indexed_normals2);
-	// Load it into a VBO
 
 	//---1st
 	GLuint vertexbuffer;
@@ -143,7 +143,7 @@ int main( void )
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
 
-	//---2nd
+	//---2nd object
 	GLuint vertexbuffer2;
 	glGenBuffers(1, &vertexbuffer2);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
@@ -260,19 +260,16 @@ int main( void )
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 		// Draw the triangles !
-		/*
+		
 		glDrawElements(
 			GL_TRIANGLES,      // mode
 			indices.size(),    // count
 			GL_UNSIGNED_SHORT,   // type
 			(void*)0           // element array buffer offset
 		);
-		*/
-
-
-
 
 		////// End of rendering of the first object //////
+
 		////// Start of the rendering of the second object //////
 
 		// In our very specific case, the 2 objects use the same shader.
@@ -294,14 +291,21 @@ int main( void )
 		//glUniform1i(TextureID, 0);
 
 		glBindTexture(GL_TEXTURE_2D, Texture2);
+		//glBindTexture(GL_TEXTURE_2D, Texture);
 		// Set our "myTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(TextureID2, 0);
+		glUniform1i(TextureID, 0);
 		
 		
 		// BUT the Model matrix is different (and the MVP too)
 		glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-		ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(2.0f, 0.0f, 0.0f));
+		// ïΩñ Çâ∫Ç…Å|ÇPï™â∫Ç∞ÇÈ
+		glm::mat4 Translatedown = glm::translate(glm::mat4(1.0f),glm::vec3(0,-1,0));
+		ModelMatrix2 = Translatedown * ModelMatrix2 ;
 		glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+		// Compute the MVP matrix from keyboard and mouse input
+		//glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		//glm::mat4 ViewMatrix = getViewMatrix();
 
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform

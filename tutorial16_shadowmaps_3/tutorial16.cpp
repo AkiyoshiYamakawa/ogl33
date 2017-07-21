@@ -1,5 +1,3 @@
-#include "TexturedObject.h"
-
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,12 +20,6 @@ using namespace glm;
 #include <common/controls.hpp>
 #include <common/objloader.hpp>
 #include <common/vboindexer.hpp>
-
-int windowWidth = 1024;
-int windowHeight = 768;
-//------------
-TexturedObject tobj01;
-TexturedObject tobj02;
 
 int main( void )
 {
@@ -56,8 +48,8 @@ int main( void )
 	glfwMakeContextCurrent(window);
     
     // We would expect width and height to be 1024 and 768
-    //int windowWidth = 1024;
-    //int windowHeight = 768;
+    int windowWidth = 1024;
+    int windowHeight = 768;
     // But on MacOS X with a retina screen it'll be 1024*2 and 768*2, so we get the actual framebuffer size:
     glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 
@@ -91,20 +83,6 @@ int main( void )
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 
-	tobj01.init(
-		"DepthRTT.vertexshader", "DepthRTT.fragmentshader",
-		"Passthrough.vertexshader", "SimpleTexture.fragmentshader",
-		"ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" ,
-		"sphere-plate.obj","sphere-plate.dds");
-	
-	
-	tobj02.init(
-		"DepthRTT.vertexshader", "DepthRTT.fragmentshader",
-		"Passthrough.vertexshader", "SimpleTexture.fragmentshader",
-		"ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" ,
-		"plate.obj","plate.dds");
-	
-	/**/
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
@@ -114,18 +92,15 @@ int main( void )
 
 	// Get a handle for our "MVP" uniform
 	GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
-	
-	/*
+
 	// Load the texture
-	//GLuint Texture = loadDDS("uvmap.DDS");
-	GLuint Texture = loadDDS("sphere-plate.DDS");
+	GLuint Texture = loadDDS("uvmap.DDS");
 	
 	// Read our .obj file
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals;
-	//bool res = loadOBJ("room_thickwalls.obj", vertices, uvs, normals);
-	bool res = loadOBJ("sphere-plate.obj", vertices, uvs, normals);
+	bool res = loadOBJ("room_thickwalls.obj", vertices, uvs, normals);
 
 	std::vector<unsigned short> indices;
 	std::vector<glm::vec3> indexed_vertices;
@@ -155,7 +130,7 @@ int main( void )
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
-	*/
+
 
 	// ---------------------------------------------
 	// Render to Texture - specific code begins here
@@ -223,12 +198,11 @@ int main( void )
 	
 	// Get a handle for our "LightPosition" uniform
 	GLuint lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
-	
+
 
 	
 	do{
 
-		
 		// Render to our framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		glViewport(0,0,1024,1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -238,14 +212,12 @@ int main( void )
 		// (if your geometry is made this way)
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-		
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
 		// Use our shader
 		glUseProgram(depthProgramID);
-		
 
 		glm::vec3 lightInvDir = glm::vec3(0.5f,2,2);
 
@@ -260,13 +232,10 @@ int main( void )
 		glm::mat4 depthModelMatrix = glm::mat4(1.0);
 		glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 
-		
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
 		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
 
-		//tobj01.draw1( MVP,ViewMatrix,ModelMatrix);
-		/*
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -291,7 +260,7 @@ int main( void )
 		);
 
 		glDisableVertexAttribArray(0);
-		*/
+
 
 
 		// Render to the screen
@@ -300,25 +269,20 @@ int main( void )
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-		
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/*
 		// Use our shader
 		glUseProgram(programID);
-		*/
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs();
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 		//ViewMatrix = glm::lookAt(glm::vec3(14,6,4), glm::vec3(0,1,0), glm::vec3(0,1,0));
-		glm::mat4 ModelMatrix = getModelMatrix();
-		glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+		glm::mat4 ModelMatrix = glm::mat4(1.0);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 		
 		glm::mat4 biasMatrix(
 			0.5, 0.0, 0.0, 0.0, 
@@ -329,7 +293,6 @@ int main( void )
 
 		glm::mat4 depthBiasMVP = biasMatrix*depthMVP;
 
-		/*
 		// Send our transformation to the currently bound shader, 
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -431,16 +394,8 @@ int main( void )
 		// You have to disable GL_COMPARE_R_TO_TEXTURE above in order to see anything !
 		//glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 		glDisableVertexAttribArray(0);
-		*/
 
-		/*
-		tobj02.draw( windowWidth,windowHeight,
-				depthMVP,MVP2,ModelMatrix2,ViewMatrix,
-				depthBiasMVP,lightInvDir);
-		*/
-		tobj01.draw1( 
-				MVP,ModelMatrix,ViewMatrix);
-		
+
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -450,9 +405,6 @@ int main( void )
 		   glfwWindowShouldClose(window) == 0 );
 
 	// Cleanup VBO and shader
-	tobj01.finalize();
-	//tobj02.finalize();
-	/*
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
 	glDeleteBuffers(1, &normalbuffer);
@@ -466,10 +418,10 @@ int main( void )
 	glDeleteTextures(1, &depthTexture);
 	glDeleteBuffers(1, &quad_vertexbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
-	*/
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 
 	return 0;
 }
+

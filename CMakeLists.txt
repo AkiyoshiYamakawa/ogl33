@@ -678,6 +678,33 @@ target_link_libraries(tutorial16_shadowmaps_2
 # Xcode and Visual working directories
 set_target_properties(tutorial16_shadowmaps_2 PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial16_shadowmaps_2/")
 create_target_launcher(tutorial16_shadowmaps_2 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial16_shadowmaps_2/")
+# Tutorial 16_3
+add_executable(tutorial16_shadowmaps_3
+	tutorial16_shadowmaps_3/tutorial16.cpp
+	common/shader.cpp
+	common/shader.hpp
+	common/controls.cpp
+	common/controls.hpp
+	common/texture.cpp
+	common/texture.hpp
+	common/objloader.cpp
+	common/objloader.hpp
+	common/vboindexer.cpp
+	common/vboindexer.hpp
+
+	tutorial16_shadowmaps_3/ShadowMapping.vertexshader
+	tutorial16_shadowmaps_3/ShadowMapping.fragmentshader
+	tutorial16_shadowmaps_3/DepthRTT.vertexshader
+	tutorial16_shadowmaps_3/DepthRTT.fragmentshader
+	tutorial16_shadowmaps_3/Passthrough.vertexshader
+	tutorial16_shadowmaps_3/SimpleTexture.fragmentshader
+)
+target_link_libraries(tutorial16_shadowmaps_3
+	${ALL_LIBS}
+)
+# Xcode and Visual working directories
+set_target_properties(tutorial16_shadowmaps_3 PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial16_shadowmaps_3/")
+create_target_launcher(tutorial16_shadowmaps_3 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial16_shadowmaps_3/")
 
 # Tutorial 17
 add_executable(tutorial17_rotations
@@ -957,6 +984,10 @@ add_custom_command(
 add_custom_command(
    TARGET tutorial16_shadowmaps_2 POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/tutorial16_shadowmaps_2${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/tutorial16_shadowmaps_2/"
+)
+add_custom_command(
+   TARGET tutorial16_shadowmaps_3 POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/tutorial16_shadowmaps_3${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/tutorial16_shadowmaps_3/"
 )
 add_custom_command(
    TARGET tutorial17_rotations POST_BUILD
